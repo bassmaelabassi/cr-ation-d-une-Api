@@ -1,26 +1,28 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
+import AdminPage from './pages/AdminPage';
+import UserPage from './pages/UserPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './components/Profile';
-import Navbar from './components/Navbar';
 
-function App() {
+const App = () => {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-100">
-        <Navbar />
-        <div className="container mx-auto px-4 py-8">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/profile" element={<Profile />} />
-          </Routes>
-        </div>
-      </div>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
+        <Route path="/user" element={<ProtectedRoute><UserPage /></ProtectedRoute>} />
+      </Routes>
     </Router>
   );
-}
+};
 
 export default App;

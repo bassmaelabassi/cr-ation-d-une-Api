@@ -1,29 +1,23 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import AuthForm from '../components/AuthForm'
-import { login } from '../services/auth'
+import { useNavigate } from 'react-router-dom';
+import AuthForm from '../components/AuthForm';
+import api from '../services/api';
 
 const Login = () => {
-  const [error, setError] = useState(null)
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const handleLogin = async (credentials) => {
+  const handleLogin = async (data) => {
     try {
-      const { token } = await login(credentials)
-      if (token) {
-        localStorage.setItem('token', token)
-        navigate('/profile')
-      }
+      const res = await api.post('/auth/login', data);
+      localStorage.setItem('token', res.data.token);
+      const role = res.data.user.role;
+      if (role === 'admin') navigate('/admin');
+      else navigate('/user');
     } catch (err) {
-      setError(err.error || 'Une erreur est survenue')
+      console.error(err);
     }
-  }
+  };
 
-  return (
-    <div>
-      <AuthForm type="login" onSubmit={handleLogin} error={error} />
-    </div>
-  )
-}
+  return <AuthForm onSubmit={handleLogin} />;
+};
 
-export default Login
+export default Login;

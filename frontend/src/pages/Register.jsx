@@ -1,26 +1,27 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import AuthForm from '../components/AuthForm'
-import { register } from '../services/auth'
+import { useNavigate } from 'react-router-dom';
+import AuthForm from '../components/AuthForm';
+import api from '../services/api';
 
 const Register = () => {
-  const [error, setError] = useState(null)
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const handleRegister = async (userData) => {
+  const handleRegister = async (data) => {
     try {
-      await register(userData)
-      navigate('/login')
+      await api.post('/auth/register', data);
+      const res = await api.post('/auth/login', {
+        email: data.email,
+        password: data.password,
+      });
+      localStorage.setItem('token', res.data.token);
+      const role = res.data.user.role;
+      if (role === 'admin') navigate('/admin');
+      else navigate('/user');
     } catch (err) {
-      setError(err.error || 'Une erreur est survenue lors de l\'inscription')
+      console.error(err);
     }
-  }
+  };
 
-  return (
-    <div>
-      <AuthForm type="register" onSubmit={handleRegister} error={error} />
-    </div>
-  )
-}
+  return <AuthForm onSubmit={handleRegister} isRegister />;
+};
 
-export default Register
+export default Register;
